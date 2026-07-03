@@ -1,0 +1,44 @@
+name: Build Minecraft Plugin
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Unzip Anything Safely
+        run: |
+          sudo apt-get install unzip
+          # Sucht nach jeder .zip-Datei im Ordner und entpackt sie automatisch
+          find . -name "*.zip" -exec unzip -o {} \;
+          
+          # Bereinigt den Ordner und löscht die originale ZIP nach dem Entpacken
+          find . -name "*.zip" -delete
+          
+          # Falls Bolt die Dateien in einen Unterordner gepackt hat, holen wir sie eine Ebene höher
+          if [ -d "project" ]; then mv project/* . 2>/dev/null || true; fi
+          if [ -d "project-bolt-"* ]; then mv project-bolt-*/* . 2>/dev/null || true; fi
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew 2>/dev/null || true
+          gradle build --no-daemon
+
+      - name: Upload Finished JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: WitherStorm-Plugin-26.1
+          path: |
+            build/libs/*.jar
+            **/build/libs/*.jar
