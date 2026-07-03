@@ -1,0 +1,20 @@
+name: Witherstorm
+version: '${version}'
+main: com.witherstorm.boss.WitherstormPlugin
+api-version: '26.1.1'
+author: Witherstorm-Dev
+description: Adds Minecraft Story Mode's Witherstorm as a multi-phase boss fight with custom mechanics, drops, and lore.
+
+website: https://github.com/witherstorm
+
+commands:
+  witherstorm:
+    description: Summon or manage the Witherstorm boss fight.
+    usage: /witherstorm <summon|despawn|reload|help>
+    permission: witherstorm.admin
+    aliases: [ws, storm]
+
+permissions:
+  witherstorm.admin:
+    description: Allows summoning and managing the Witherstorm.
+    default: op

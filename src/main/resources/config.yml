@@ -1,0 +1,135 @@
+# ============================================================
+#  Witherstorm - Configuration
+#  Minecraft Story Mode's Witherstorm as a Paper boss fight.
+# ============================================================
+
+boss:
+  # Base health (in half-hearts; 600 = 300 hearts).
+  max-health: 600.0
+  # Boss bar color: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE.
+  boss-bar-color: PURPLE
+  # Boss bar style: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20.
+  boss-bar-style: NOTCHED_20
+  # Phase 1 -> 2 threshold (fraction of max health).
+  phase-2-threshold: 0.66
+  # Phase 2 -> 3 threshold (fraction of max health).
+  phase-3-threshold: 0.33
+  # Blocks the storm pulls in per second while feeding (phase 2+).
+  consumption-rate: 8
+  # Radius (blocks) within which blocks are consumed.
+  consumption-radius: 14
+  # Whether consumed blocks grow the storm's max health.
+  grow-on-consume: true
+  # Health gained per consumed block.
+  growth-per-block: 1.0
+  # Max health cap after growth.
+  growth-cap: 1200.0
+
+# Phase 1: The storm awakens as a small Wither with a command-block core.
+# It absorbs nearby blocks — they float toward it, making it grow.
+# Once enough blocks are absorbed, it evolves into phase 2.
+phase1:
+  absorb:
+    enabled: true
+    # Ticks between absorption pulses (20 ticks = 1 second).
+    interval: 5
+    # Blocks pulled per pulse.
+    rate: 4
+    # Radius (blocks) to search for absorbable blocks.
+    radius: 12
+    # Damage dealt to nearby players per pulse (the storm's pull is violent).
+    damage: 3.0
+  # Blocks needed to absorb before the storm evolves to phase 2.
+  evolve-blocks: 200
+  # How much the visual size grows per absorbed block (unused for hitbox, cosmetic only).
+  size-per-block: 0.003
+
+attacks:
+  # Tractor beam: pulls nearby players toward the storm.
+  tractor-beam:
+    enabled: true
+    # Seconds between activations.
+    interval: 12
+    # Pull force multiplier.
+    force: 1.6
+    # Max range (blocks).
+    range: 40
+    # Levitation ticks applied to pulled targets.
+    levitation-ticks: 40
+  # Tentacle slam: AoE damage around the storm.
+  tentacle-slam:
+    enabled: true
+    interval: 18
+    damage: 8.0
+    radius: 8.0
+    # Knockback strength.
+    knockback: 1.4
+  # Wither skull barrage: rapid projectiles in phase 3.
+  skull-barrage:
+    enabled: true
+    interval: 9
+    # Number of skulls per barrage.
+    count: 3
+    damage: 6.0
+  # Summon wither skeletons in phase 2+.
+  summon-minions:
+    enabled: true
+    interval: 25
+    # Max concurrent minions.
+    max-minions: 6
+    # Minions spawned per wave.
+    count: 2
+
+drops:
+  # Experience dropped on death.
+  experience: 1500
+  # Custom drops. material: amount:chance (0.0-1.0)
+  items:
+    - "NETHER_STAR:1:1.0"
+    - "WITHER_SKELETON_SKULL:2:0.75"
+    - "ELYTRA:1:0.15"
+    - "ENCHANTED_GOLDEN_APPLE:3:0.5"
+    - "DRAGON_BREATH:4:0.4"
+    - "BEACON:1:0.25"
+  # Custom lore drop: the Command Block Fragment.
+  command-block-fragment:
+    enabled: true
+    # Material used to represent the fragment.
+    material: "STRUCTURE_BLOCK"
+    # Custom model data for resource packs (optional).
+    custom-model-data: 26111
+    # Display name.
+    name: "<gradient:#a855f7:#ec4899>Command Block Fragment</gradient>"
+    # Lore lines (MiniMessage format).
+    lore:
+      - "<gray>A shard of raw, unbridled command energy."
+      - "<gray>Torn from the heart of the Witherstorm."
+      - ""
+      - "<light_purple>Rarity: <bold>Mythic</bold>"
+      - "<dark_gray>\"It hums with the power to reshape reality.\""
+
+lore:
+  # Lore shown in the summon item tooltip.
+  summon-item:
+    name: "<gradient:#7c3aed:#db2777>Witherstorm Heart</gradient>"
+    lore:
+      - "<gray>The pulsing core of a forgotten experiment."
+      - "<gray>Place it upon soul sand to awaken the storm."
+      - ""
+      - "<red>Warning: <dark_red>Cannot be contained once released."
+      - "<dark_gray>\"It consumes. It grows. It cannot be stopped.\""
+  # Broadcasted lore when the fight begins.
+  summon-broadcast: "<dark_purple>The sky darkens. A Witherstorm awakens, hungry and unending..."
+  # Broadcasted lore when the storm dies.
+  death-broadcast: "<light_purple>The Witherstorm collapses into silence. The air tastes of ash and command energy."
+  # Per-phase broadcast messages.
+  phase-2-message: "<dark_purple>The Witherstorm shudders and begins to feed..."
+  phase-3-message: "<dark_red>The Witherstorm roars! Its command core is exposed!"
+
+world:
+  # Worlds where summoning is allowed (empty list = all).
+  allowed-worlds: []
+  # Block the storm must be placed on to summon.
+  summon-block: "SOUL_SAND"
+  # Prevent block breaking within this radius of an active storm.
+  protect-radius: 32
