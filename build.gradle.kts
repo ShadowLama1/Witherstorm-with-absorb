@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     // Paper 26.1.1 (Minecraft 1.21.11). Unobfuscated API as of 26.1.
-    compileOnly("io.papermc.paper:paper-api:26.1.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.1.build.+")
 }
 
 java {
