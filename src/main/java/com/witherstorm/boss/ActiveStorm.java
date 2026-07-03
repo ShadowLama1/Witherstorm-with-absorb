@@ -11,10 +11,16 @@ import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.WitherSkull;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +85,6 @@ public final class ActiveStorm {
         if (phase == 1 && cfg.phase1AbsorbEnabled && --absorbTimer <= 0) { absorbTimer = cfg.phase1AbsorbInterval; consumeBlocks(); }
         updateFloatingBlocks();
     }
-
     private void updatePhase() {
         double ratio = wither.getHealth() / (wither.getAttribute(Attribute.MAX_HEALTH) != null ? wither.getAttribute(Attribute.MAX_HEALTH).getValue() : cfg.maxHealth);
         if (phase == 1 && (ratio <= cfg.phase2Threshold || blocksAbsorbed >= cfg.phase1EvolveBlocks)) {
@@ -90,17 +95,15 @@ public final class ActiveStorm {
             phase = 3; broadcast(cfg.phase3Message);
             world.playSound(wither.getLocation(), Sound.ENTITY_WITHER_SPAWN, 2.0f, 0.3f);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "meg model " + wither.getUniqueId() + " change witherstorm_phase3");
-            if (wither.getAttribute(Attribute.GENERIC_SCALE) != null) wither.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(5.0);
+            if (wither.getAttribute(Attribute.SCALE) != null) wither.getAttribute(Attribute.SCALE).setBaseValue(5.0);
         }
     }
 
     private void updateBossBar() {
         double max = wither.getAttribute(Attribute.MAX_HEALTH) != null ? wither.getAttribute(Attribute.MAX_HEALTH).getValue() : cfg.maxHealth;
-        bossBar.progress((float) Math.max(0.0, Math.min(1.0, wither.getHealth() / max)));
         for (Player p : world.getPlayers()) {
             if (p.getLocation().distance(wither.getLocation()) <= 60) p.showBossBar(bossBar); else p.hideBossBar(bossBar);
         }
-        bossBar.name(plugin.miniMessage().deserialize("<dark_purple>Witherstorm <gray>Phase " + phase + " <dark_gray>" + (int) wither.getHealth() + " HP"));
     }
 
     private void keepLevitated() { wither.setVelocity(new Vector(0, 0.05, 0)); }
@@ -146,7 +149,7 @@ public final class ActiveStorm {
 
     private void updateFloatingBlocks() {
         floatingBlocks.removeIf(uuid -> {
-            org.bukkit.entity.Entity e = Bukkit.getEntity(uuid); if (e == null || !e.isValid()) return true;
+            Entity e = Bukkit.getEntity(uuid); if (e == null || !e.isValid()) return true;
             if (e.getLocation().distance(wither.getLocation()) <= 3) { e.remove(); return true; }
             return false;
         });
@@ -154,15 +157,23 @@ public final class ActiveStorm {
 
     private void broadcast(String msg) { if (msg != null && !msg.isEmpty()) Bukkit.broadcast(plugin.miniMessage().deserialize(msg)); }
 
+    public boolean matches(Entity entity) { return wither != null && wither.equals(entity); }
+    public void onDamage(EntityDamageEvent e) { handleDamage(e); }
+    public void onDamage(EntityDamageByEntityEvent e) { handleDamageByEntity(e); }
+    public void onTarget(EntityTargetEvent e) { handleTarget(e); }
+    public void onTarget(EntityTargetLivingEntityEvent e) {}
+    public void onDeath(EntityDeathEvent e) { handleDeath(e); }
+
+    public void cleanup() { remove(); }
+
     public void remove() {
-        dead = true; if (wither != null && wither.isValid()) wither.remove();
-        for (UUID id : minions) { org.bukkit.entity.Entity e = Bukkit.getEntity(id); if (e != null) e.remove(); }
-        for (UUID id : floatingBlocks) { org.bukkit.entity.Entity e = Bukkit.getEntity(id); if (e != null) e.remove(); }
-        bossBar.removeAll();
+        dead = true; bossBar.removeAll(); if (wither != null && wither.isValid()) wither.remove();
+        for (UUID id : minions) { Entity e = Bukkit.getEntity(id); if (e != null) e.remove(); }
+        for (UUID id : floatingBlocks) { Entity e = Bukkit.getEntity(id); if (e != null) e.remove(); }
     }
 
-    public void handleDamage(org.bukkit.event.entity.EntityDamageEvent e) {}
-    public void handleDamageByEntity(org.bukkit.event.entity.EntityDamageByEntityEvent e) {}
-    public void handleTarget(org.bukkit.event.entity.EntityTargetEvent e) {}
-    public void handleDeath(org.bukkit.event.entity.EntityDeathEvent e) { dead = true; bossBar.removeAll(); }
+    public void handleDamage(EntityDamageEvent e) {}
+    public void handleDamageByEntity(EntityDamageByEntityEvent e) {}
+    public void handleTarget(EntityTargetEvent e) {}
+    public void handleDeath(EntityDeathEvent e) { dead = true; bossBar.removeAll(); }
 }
