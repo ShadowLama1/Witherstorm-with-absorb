@@ -311,7 +311,7 @@ public final class ActiveStorm {
                 FallingBlock fb = world.spawn(blockLoc, FallingBlock.class);
                 fb.setBlockData(type.createBlockData());
                 fb.setGravity(false);
-                fb.setDropItems(false);
+                fb.setDropItem(false);
                 fb.setHurtEntities(false);
                 floatingBlocks.add(fb.getUniqueId());
 
