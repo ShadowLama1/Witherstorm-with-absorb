@@ -11,8 +11,8 @@ repositories {
 }
 
 dependencies {
-    // Paper 26.1.1 (Minecraft 1.21.11). Unobfuscated API as of 26.1.
-    compileOnly("io.papermc.paper:paper-api:26.1.build.+")
+    // Offizielles Paper 26.1.2 API-Format für automatische Build-Zuweisung
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
 }
 
 java {
