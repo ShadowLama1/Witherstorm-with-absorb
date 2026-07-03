@@ -167,7 +167,7 @@ public final class ActiveStorm {
     public void cleanup() { remove(); }
 
     public void remove() {
-        dead = true; bossBar.removeAll(); if (wither != null && wither.isValid()) wither.remove();
+        dead = true; for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) { p.hideBossBar(bossBar); }; if (wither != null && wither.isValid()) wither.remove();
         for (UUID id : minions) { Entity e = Bukkit.getEntity(id); if (e != null) e.remove(); }
         for (UUID id : floatingBlocks) { Entity e = Bukkit.getEntity(id); if (e != null) e.remove(); }
     }
@@ -175,5 +175,5 @@ public final class ActiveStorm {
     public void handleDamage(EntityDamageEvent e) {}
     public void handleDamageByEntity(EntityDamageByEntityEvent e) {}
     public void handleTarget(EntityTargetEvent e) {}
-    public void handleDeath(EntityDeathEvent e) { dead = true; bossBar.removeAll(); }
+    public void handleDeath(EntityDeathEvent e) { dead = true; for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) { p.hideBossBar(bossBar); }; }
 }
